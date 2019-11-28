@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">BlogNews</string>
+    <string name="name">Nome</string>
+    <string name="email">Email</string>
+    <string name="senha">Senha</string>
+    <string name="repita_a_senha">Repita a senha</string>
+    <string name="save">Salvar</string>
+    <string name="login">Login</string>
+    <string name="stymulus_to_create_account"><u>Não tem conta. Cadastre-se aqui.</u></string>
+</resources>
