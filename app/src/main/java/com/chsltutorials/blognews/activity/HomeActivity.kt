@@ -1,23 +1,22 @@
 package com.chsltutorials.blognews.activity
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import androidx.core.view.GravityCompat
-import androidx.appcompat.app.ActionBarDrawerToggle
-import android.view.MenuItem
-import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.material.navigation.NavigationView
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
-import android.widget.TextView
+import android.view.MenuItem
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.view.GravityCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.chsltutorials.blognews.R
 import com.chsltutorials.blognews.base.BaseActivity
+import com.chsltutorials.blognews.fragments.HomeFragment
+import com.chsltutorials.blognews.fragments.ProfileFragment
+import com.chsltutorials.blognews.fragments.SettingsFragment
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.app_bar_home.*
-import kotlinx.android.synthetic.main.nav_header_home.*
 import kotlinx.android.synthetic.main.nav_header_home.view.*
 
 class HomeActivity : BaseActivity(),
@@ -81,25 +80,26 @@ class HomeActivity : BaseActivity(),
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_home -> {
-                // Handle the camera action
+                supportActionBar?.title = "Home"
+                supportFragmentManager.beginTransaction().replace(R.id.flContainer, HomeFragment())
+                    .commit()
             }
-            R.id.nav_gallery -> {
+
+            R.id.nav_profile -> {
+                supportActionBar?.title = "Perfil"
+                supportFragmentManager.beginTransaction().replace(R.id.flContainer, ProfileFragment())
+                    .commit()
 
             }
-            R.id.nav_slideshow -> {
-
+            R.id.nav_settings -> {
+                supportActionBar?.title = "Configurações"
+                supportFragmentManager.beginTransaction().replace(R.id.flContainer, SettingsFragment())
+                    .commit()
             }
-            R.id.nav_tools -> {
 
-            }
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
-            }
             R.id.nav_log_out -> {
-
+                FirebaseAuth.getInstance().signOut()
+                goToRegister()
             }
         }
         drawerLayout.closeDrawer(GravityCompat.START)

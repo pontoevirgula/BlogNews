@@ -5,6 +5,8 @@ import android.util.Patterns
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.chsltutorials.blognews.activity.HomeActivity
+import com.chsltutorials.blognews.activity.LoginActivity
+import com.chsltutorials.blognews.activity.RegisterActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
@@ -63,6 +65,16 @@ abstract class BaseActivity : AppCompatActivity() {
 
     protected fun goToHome() {
         startActivity(Intent(this, HomeActivity::class.java))
+        finish()
+    }
+
+    protected fun goToRegister() {
+        startActivity(Intent(this, RegisterActivity::class.java))
+        finish()
+    }
+
+    protected fun goToLogin() {
+        startActivity(Intent(this, LoginActivity::class.java))
         finish()
     }
 }

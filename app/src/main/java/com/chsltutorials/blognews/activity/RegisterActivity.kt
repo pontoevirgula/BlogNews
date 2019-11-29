@@ -19,7 +19,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_register.*
 import kotlinx.android.synthetic.main.activity_register.ivUser
 
@@ -40,7 +39,6 @@ class RegisterActivity : BaseActivity() {
         progressBar.visibility = View.INVISIBLE
 
         ivUser.setOnClickListener {
-
             if(Build.VERSION.SDK_INT >= 22){
                 checkAndRequestForPermission()
             }else{
@@ -62,6 +60,8 @@ class RegisterActivity : BaseActivity() {
                 progressBar.visibility = View.INVISIBLE
             }
         }
+
+        tvStymulusLogin.setOnClickListener { goToLogin() }
     }
 
     private fun createUserAccount(name: String, email: String, password: String) {

@@ -38,7 +38,7 @@ class LoginActivity : BaseActivity() {
         }
 
         tvStymulusCreateAccount.setOnClickListener {
-            startActivity(Intent(this,RegisterActivity::class.java))
+            goToRegister()
         }
     }
 
