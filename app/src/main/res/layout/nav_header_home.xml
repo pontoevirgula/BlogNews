@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/nav_header_height"
+        android:background="#fff"
+        android:padding="@dimen/activity_vertical_margin"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
+        android:orientation="vertical"
+        android:gravity="bottom">
+
+    <ImageView
+            android:scaleType="centerCrop"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            app:srcCompat="@mipmap/ic_launcher_round"
+            android:contentDescription="@string/nav_header_desc"
+            android:id="@+id/ivNavUserPhoto"/>
+
+    <TextView
+            android:id="@+id/tvNavUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:paddingTop="@dimen/nav_header_vertical_spacing"
+            tools:text="@string/nav_header_title"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="@string/nav_header_subtitle"
+            android:textColor="#000"
+            android:id="@+id/tvNavEmail"/>
+
+</LinearLayout>
