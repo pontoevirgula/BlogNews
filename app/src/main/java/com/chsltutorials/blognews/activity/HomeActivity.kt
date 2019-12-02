@@ -1,8 +1,11 @@
 package com.chsltutorials.blognews.activity
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
+import android.widget.Toolbar
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import com.bumptech.glide.Glide
@@ -18,9 +21,12 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.app_bar_home.*
 import kotlinx.android.synthetic.main.nav_header_home.view.*
+import kotlinx.android.synthetic.main.popup_add_post.*
 
 class HomeActivity : BaseActivity(),
                     NavigationView.OnNavigationItemSelectedListener {
+
+    lateinit var addPopUpDialog : Dialog
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,10 +37,8 @@ class HomeActivity : BaseActivity(),
         mAuth = FirebaseAuth.getInstance()
 
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
+        fab.setOnClickListener { addPopUpDialog.show() }
+
         val toggle = ActionBarDrawerToggle(
             this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
@@ -45,11 +49,30 @@ class HomeActivity : BaseActivity(),
 
     }
 
+    private fun initPopUp() {
+        addPopUpDialog = Dialog(this)
+        addPopUpDialog.setContentView(R.layout.popup_add_post)
+        addPopUpDialog.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        addPopUpDialog.window.setLayout(Toolbar.LayoutParams.MATCH_PARENT,Toolbar.LayoutParams.WRAP_CONTENT)
+        addPopUpDialog.window.attributes.gravity = Gravity.TOP
+
+        Glide.with(this)
+            .load(currentUser.photoUrl)
+            .apply(RequestOptions.circleCropTransform())
+            .into(addPopUpDialog.ivPhotoPopup)
+
+        addPopUpDialog.ivAddPopup.setOnClickListener {
+            addPopUpDialog.popupProgressBar.visibility = View.VISIBLE
+            it.visibility = View.INVISIBLE
+        }
+    }
+
     override fun onStart() {
         super.onStart()
         mAuth.currentUser?.let {
             currentUser = it
             updateNavHeader()
+            initPopUp()
         }
     }
 

@@ -19,5 +19,7 @@
     <string name="menu_profile">Perfil</string>
     <string name="menu_log_out">Sair</string>
     <string name="tvStymulusLogin"> <u>Já tem cadastro? Clique aqui para logar.</u> </string>
+    <string name="title">Título</string>
+    <string name="description">Descrição</string>
 
 </resources>
