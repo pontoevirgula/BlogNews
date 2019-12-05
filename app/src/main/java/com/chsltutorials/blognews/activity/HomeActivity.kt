@@ -51,7 +51,21 @@ class HomeActivity : BaseActivity(),
             updateNavHeader()
             initPopUp()
             fab.setOnClickListener { popUpDialog.show() }
-            setUpPermissionToPostImage()
+            popUpDialog.ivPopupSelected.setOnClickListener {
+                verifySDK(this,CODE, REQUESTCODE)
+            }
+            popUpDialog.ivAddPopup.setOnClickListener {
+                popUpDialog.popupProgressBar.visibility = View.VISIBLE
+                it.visibility = View.INVISIBLE
+
+                if(title.isNotEmpty() && description.isNotEmpty() && pickedImagePopup != null){
+                    addPostToFirebaseDatabase()
+                }else{
+                    showMessageAlert(this,"Por favor, preencha todos os campos obrigatórios")
+                    popUpDialog.popupProgressBar.visibility = View.INVISIBLE
+                    popUpDialog.ivAddPopup.visibility = View.VISIBLE
+                }
+            }
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -59,16 +73,7 @@ class HomeActivity : BaseActivity(),
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
-
         navView.setNavigationItemSelectedListener(this)
-
-    }
-
-
-    private fun setUpPermissionToPostImage() {
-        popUpDialog.ivPopupSelected.setOnClickListener {
-            verifySDK(this,CODE, REQUESTCODE)
-        }
     }
 
     private fun initPopUp() {
@@ -87,20 +92,6 @@ class HomeActivity : BaseActivity(),
             .into(popUpDialog.ivPhotoPopup)
 
         pickedImagePopup.let {  popUpDialog.ivPopupSelected.setImageURI(it) }
-
-        popUpDialog.ivAddPopup.setOnClickListener {
-            popUpDialog.popupProgressBar.visibility = View.VISIBLE
-            it.visibility = View.INVISIBLE
-
-            if(title.isNotEmpty() && description.isNotEmpty() && pickedImagePopup != null){
-                addPostToFirebaseDatabase()
-            }else{
-                showMessageAlert(this,"Por favor, preencha todos os campos obrigatórios")
-                popUpDialog.popupProgressBar.visibility = View.INVISIBLE
-                popUpDialog.ivAddPopup.visibility = View.VISIBLE
-            }
-
-        }
     }
 
     private fun addPostToFirebaseDatabase() {
@@ -113,24 +104,26 @@ class HomeActivity : BaseActivity(),
                 val myReference = database.getReference("Publicações").push()
                 val myKey = myReference.key
 
-                val post = Post(myKey,
+                val post = Post(
+                    myKey,
                     title,
                     description,
                     imageDownloadLink,
                     currentUser.uid,
-                    currentUser.photoUrl.toString())
+                    currentUser.photoUrl.toString()
+                )
 
                 myReference.setValue(post).addOnSuccessListener {
-                    showMessageAlert(this,"Postagem adicionado com sucesso")
+                    showMessageAlert(this, "Postagem adicionado com sucesso")
                     popUpDialog.popupProgressBar.visibility = View.INVISIBLE
                     popUpDialog.ivAddPopup.visibility = View.VISIBLE
+                }
             }
             .addOnFailureListener {
                 showMessageAlert(this,it.message!!)
                 popUpDialog.popupProgressBar.visibility = View.INVISIBLE
                 popUpDialog.ivAddPopup.visibility = View.VISIBLE
             }
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -150,7 +143,16 @@ class HomeActivity : BaseActivity(),
         }
     }
 
+    private fun updateNavHeader(){
+        val headerView = navView.getHeaderView(0)
+        headerView.tvNavUsername.text = currentUser.displayName
+        headerView.tvNavEmail.text = currentUser.email
 
+        Glide.with(this)
+            .load(currentUser.photoUrl)
+            .apply(RequestOptions.circleCropTransform())
+            .into(headerView.ivNavUserPhoto)
+    }
 
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -205,16 +207,6 @@ class HomeActivity : BaseActivity(),
         return true
     }
 
-    private fun updateNavHeader(){
-        val headerView = navView.getHeaderView(0)
-        headerView.tvNavUsername.text = currentUser.displayName
-        headerView.tvNavEmail.text = currentUser.email
-
-        Glide.with(this)
-            .load(currentUser.photoUrl)
-            .apply(RequestOptions.circleCropTransform())
-            .into(headerView.ivNavUserPhoto)
-    }
 
     companion object{
         const val CODE = 2

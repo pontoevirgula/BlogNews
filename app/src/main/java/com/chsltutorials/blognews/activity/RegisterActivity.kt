@@ -70,7 +70,6 @@ class RegisterActivity : BaseActivity() {
     }
 
     private fun updateUserInfo(name: String, pickedImage: Uri, currentUser: FirebaseUser?) {
-
         val storage = FirebaseStorage.getInstance().reference.child("users_photos")
         val imageFilePath = storage.child(pickedImage.lastPathSegment)
         imageFilePath.putFile(pickedImage).addOnSuccessListener {
@@ -88,7 +87,6 @@ class RegisterActivity : BaseActivity() {
                 }
             }
         }
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
