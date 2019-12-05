@@ -1,10 +1,16 @@
 package com.chsltutorials.blognews.activity
 
+import android.app.Activity
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
-import android.view.*
+import android.view.Gravity
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.Toolbar
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
@@ -15,9 +21,12 @@ import com.chsltutorials.blognews.base.BaseActivity
 import com.chsltutorials.blognews.fragments.HomeFragment
 import com.chsltutorials.blognews.fragments.ProfileFragment
 import com.chsltutorials.blognews.fragments.SettingsFragment
+import com.chsltutorials.blognews.model.Post
+import com.chsltutorials.blognews.util.showMessageAlert
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.app_bar_home.*
 import kotlinx.android.synthetic.main.nav_header_home.view.*
@@ -26,8 +35,10 @@ import kotlinx.android.synthetic.main.popup_add_post.*
 class HomeActivity : BaseActivity(),
                     NavigationView.OnNavigationItemSelectedListener {
 
-    lateinit var addPopUpDialog : Dialog
-
+    lateinit var popUpDialog : Dialog
+    var pickedImagePopup : Uri? = null
+    lateinit var title: String
+    lateinit var description : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,9 +46,13 @@ class HomeActivity : BaseActivity(),
         setSupportActionBar(toolbar)
 
         mAuth = FirebaseAuth.getInstance()
-
-
-        fab.setOnClickListener { addPopUpDialog.show() }
+        mAuth.currentUser?.let {
+            currentUser = it
+            updateNavHeader()
+            initPopUp()
+            fab.setOnClickListener { popUpDialog.show() }
+            setUpPermissionToPostImage()
+        }
 
         val toggle = ActionBarDrawerToggle(
             this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
@@ -49,32 +64,93 @@ class HomeActivity : BaseActivity(),
 
     }
 
+
+    private fun setUpPermissionToPostImage() {
+        popUpDialog.ivPopupSelected.setOnClickListener {
+            verifySDK(this,CODE, REQUESTCODE)
+        }
+    }
+
     private fun initPopUp() {
-        addPopUpDialog = Dialog(this)
-        addPopUpDialog.setContentView(R.layout.popup_add_post)
-        addPopUpDialog.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        addPopUpDialog.window.setLayout(Toolbar.LayoutParams.MATCH_PARENT,Toolbar.LayoutParams.WRAP_CONTENT)
-        addPopUpDialog.window.attributes.gravity = Gravity.TOP
+        title = popUpDialog.etTitlePopup.text.toString()
+        description = popUpDialog.etDescriptionPopup.text.toString()
+
+        popUpDialog = Dialog(this)
+        popUpDialog.setContentView(R.layout.popup_add_post)
+        popUpDialog.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        popUpDialog.window.setLayout(Toolbar.LayoutParams.MATCH_PARENT,Toolbar.LayoutParams.WRAP_CONTENT)
+        popUpDialog.window.attributes.gravity = Gravity.TOP
 
         Glide.with(this)
             .load(currentUser.photoUrl)
             .apply(RequestOptions.circleCropTransform())
-            .into(addPopUpDialog.ivPhotoPopup)
+            .into(popUpDialog.ivPhotoPopup)
 
-        addPopUpDialog.ivAddPopup.setOnClickListener {
-            addPopUpDialog.popupProgressBar.visibility = View.VISIBLE
+        pickedImagePopup.let {  popUpDialog.ivPopupSelected.setImageURI(it) }
+
+        popUpDialog.ivAddPopup.setOnClickListener {
+            popUpDialog.popupProgressBar.visibility = View.VISIBLE
             it.visibility = View.INVISIBLE
+
+            if(title.isNotEmpty() && description.isNotEmpty() && pickedImagePopup != null){
+                addPostToFirebaseDatabase()
+            }else{
+                showMessageAlert(this,"Por favor, preencha todos os campos obrigatórios")
+                popUpDialog.popupProgressBar.visibility = View.INVISIBLE
+                popUpDialog.ivAddPopup.visibility = View.VISIBLE
+            }
+
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        mAuth.currentUser?.let {
-            currentUser = it
-            updateNavHeader()
-            initPopUp()
+    private fun addPostToFirebaseDatabase() {
+        val storageReference = FirebaseStorage.getInstance().reference.child("blog_imagens")
+        val imagePath = storageReference.child(pickedImagePopup!!.lastPathSegment)
+        imagePath.putFile(pickedImagePopup!!)
+            .addOnSuccessListener {
+                val imageDownloadLink = it.uploadSessionUri.toString()
+                val database = FirebaseDatabase.getInstance()
+                val myReference = database.getReference("Publicações").push()
+                val myKey = myReference.key
+
+                val post = Post(myKey,
+                    title,
+                    description,
+                    imageDownloadLink,
+                    currentUser.uid,
+                    currentUser.photoUrl.toString())
+
+                myReference.setValue(post).addOnSuccessListener {
+                    showMessageAlert(this,"Postagem adicionado com sucesso")
+                    popUpDialog.popupProgressBar.visibility = View.INVISIBLE
+                    popUpDialog.ivAddPopup.visibility = View.VISIBLE
+            }
+            .addOnFailureListener {
+                showMessageAlert(this,it.message!!)
+                popUpDialog.popupProgressBar.visibility = View.INVISIBLE
+                popUpDialog.ivAddPopup.visibility = View.VISIBLE
+            }
         }
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK
+                && requestCode == REQUESTCODE
+                && data != null ){
+            //usuario escolheu a imagem, que deve ser salva no objeto Uri
+            pickedImagePopup = data.data!!
+            popUpDialog.ivPopupSelected.setImageURI(pickedImagePopup)
+
+//            Glide.with(applicationContext)
+//                .load(pickedImagePopup)
+//                .into(addPopUpDialog.ivPopupSelected)
+
+        }
+    }
+
+
 
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -138,5 +214,10 @@ class HomeActivity : BaseActivity(),
             .load(currentUser.photoUrl)
             .apply(RequestOptions.circleCropTransform())
             .into(headerView.ivNavUserPhoto)
+    }
+
+    companion object{
+        const val CODE = 2
+        const val REQUESTCODE = 2
     }
 }

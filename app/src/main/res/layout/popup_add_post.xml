@@ -48,12 +48,12 @@
             android:layout_width="0dp"
             android:layout_height="225dp"
             tools:srcCompat="@tools:sample/backgrounds/scenic[0]"
-            android:id="@+id/ivPopup"/>
+            android:id="@+id/ivPopupSelected"/>
     <ImageView
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/ivPopup"
-            app:layout_constraintTop_toBottomOf="@id/ivPopup"
+            app:layout_constraintBottom_toBottomOf="@id/ivPopupSelected"
+            app:layout_constraintTop_toBottomOf="@id/ivPopupSelected"
             android:padding="12dp"
             android:background="@drawable/circle_bg"
             android:layout_width="56dp"

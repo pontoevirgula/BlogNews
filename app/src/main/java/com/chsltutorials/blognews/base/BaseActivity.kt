@@ -1,12 +1,20 @@
 package com.chsltutorials.blognews.base
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.util.Patterns
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.chsltutorials.blognews.activity.HomeActivity
 import com.chsltutorials.blognews.activity.LoginActivity
 import com.chsltutorials.blognews.activity.RegisterActivity
+import com.chsltutorials.blognews.util.showMessageAlert
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
@@ -14,8 +22,41 @@ abstract class BaseActivity : AppCompatActivity() {
 
     lateinit var mAuth : FirebaseAuth
     lateinit var currentUser : FirebaseUser
+    lateinit var context : Context
 
-    fun isAllFieldsCorrect(etName : EditText, etEmail : EditText, etPassword : EditText, etConfirmPassword : EditText) : Boolean {
+    protected fun verifySDK(context : Context, code : Int,requestCode : Int){
+        if(Build.VERSION.SDK_INT >= 22){
+            checkAndRequestForPermission(context,code,requestCode)
+        }else{
+            openGallery(requestCode)
+        }
+    }
+
+    private fun checkAndRequestForPermission(context : Context, code : Int,requestCode : Int) {
+
+        if( ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED){
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)){
+                //SE NEGAR PERMISSÃO
+                showMessageAlert(context,"Por favor aceite as permissões requisitadas")
+            }else{
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),code)
+            }
+
+        } else{
+            openGallery(requestCode)
+        }
+
+    }
+
+    private fun openGallery(requestCode : Int) {
+        val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
+        galleryIntent.type = "image/*"
+        startActivityForResult(galleryIntent, requestCode)
+    }
+
+    fun isAllFieldsCorrect(etName : EditText, etEmail : EditText, etPassword : EditText, etConfirmPassword : EditText, pickedImage : String) : Boolean {
 
         val name = etName.text.toString()
         val email = etEmail.text.toString()
@@ -24,6 +65,10 @@ abstract class BaseActivity : AppCompatActivity() {
 
         var correctRegister = true
 
+        if (pickedImage.isEmpty()){
+            showMessageAlert(applicationContext,"Selecione uma imagem para foto de perfil")
+            correctRegister = false
+        }
         if (name.isEmpty()) {
             etName.error = "Campo nome vazio. Preencha-o para cadastrar"
             correctRegister = false
