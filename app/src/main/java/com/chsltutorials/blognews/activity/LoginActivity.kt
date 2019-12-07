@@ -1,6 +1,5 @@
 package com.chsltutorials.blognews.activity
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -38,7 +37,7 @@ class LoginActivity : BaseActivity() {
         }
 
         tvStymulusCreateAccount.setOnClickListener {
-            goToRegister()
+            goToOtherActivity(RegisterActivity::class.java)
         }
     }
 
@@ -47,7 +46,7 @@ class LoginActivity : BaseActivity() {
         mAuth.currentUser?.let {
             //se ja estiver conectado sera redirecionado a home
             currentUser = it
-            goToHome()
+            goToOtherActivity(HomeActivity::class.java)
         }
     }
 
@@ -59,7 +58,7 @@ class LoginActivity : BaseActivity() {
                     btnLogin.visibility = View.VISIBLE
                     progressBarLogin.visibility = View.INVISIBLE
                     showMessageAlert(this,"Logado com sucesso")
-                    goToHome()
+                    goToOtherActivity(HomeActivity::class.java)
                 }else{
                     Log.w("TAG", "${it.exception}")
                     showMessageAlert(this,"Falha no login")

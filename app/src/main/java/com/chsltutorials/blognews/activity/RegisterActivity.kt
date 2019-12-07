@@ -49,7 +49,7 @@ class RegisterActivity : BaseActivity() {
             }
         }
 
-        tvStymulusLogin.setOnClickListener { goToLogin() }
+        tvStymulusLogin.setOnClickListener { goToOtherActivity(LoginActivity::class.java) }
     }
 
     private fun createUserAccount(name: String, email: String, password: String) {
@@ -82,7 +82,7 @@ class RegisterActivity : BaseActivity() {
                 currentUser?.updateProfile(profileUpdate)?.addOnCompleteListener {
                     if(it.isSuccessful){
                         showMessageAlert(this,"Cadastro completo")
-                        goToHome()
+                        goToOtherActivity(HomeActivity::class.java)
                     }
                 }
             }

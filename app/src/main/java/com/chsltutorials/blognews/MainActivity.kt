@@ -1,6 +1,7 @@
 package com.chsltutorials.blognews
 
 import android.os.Bundle
+import com.chsltutorials.blognews.activity.LoginActivity
 import com.chsltutorials.blognews.base.BaseActivity
 
 class MainActivity : BaseActivity() {
@@ -9,6 +10,6 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        goToLogin()
+        goToOtherActivity(LoginActivity::class.java)
     }
 }

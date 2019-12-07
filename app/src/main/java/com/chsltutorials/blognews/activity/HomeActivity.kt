@@ -77,9 +77,6 @@ class HomeActivity : BaseActivity(),
     }
 
     private fun initPopUp() {
-        title = popUpDialog.etTitlePopup.text.toString()
-        description = popUpDialog.etDescriptionPopup.text.toString()
-
         popUpDialog = Dialog(this)
         popUpDialog.setContentView(R.layout.popup_add_post)
         popUpDialog.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -92,6 +89,9 @@ class HomeActivity : BaseActivity(),
             .into(popUpDialog.ivPhotoPopup)
 
         pickedImagePopup.let {  popUpDialog.ivPopupSelected.setImageURI(it) }
+
+        title = popUpDialog.etTitlePopup.text.toString()
+        description = popUpDialog.etDescriptionPopup.text.toString()
     }
 
     private fun addPostToFirebaseDatabase() {
@@ -200,7 +200,7 @@ class HomeActivity : BaseActivity(),
 
             R.id.nav_log_out -> {
                 FirebaseAuth.getInstance().signOut()
-                goToRegister()
+                goToOtherActivity(LoginActivity::class.java)
             }
         }
         drawerLayout.closeDrawer(GravityCompat.START)

@@ -1,6 +1,7 @@
 package com.chsltutorials.blognews.base
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -108,18 +109,9 @@ abstract class BaseActivity : AppCompatActivity() {
 
     private fun validateEmail(email: String) = email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
-    protected fun goToHome() {
-        startActivity(Intent(this, HomeActivity::class.java))
+    protected fun goToOtherActivity(activity : Class<*>) {
+        startActivity(Intent(this, activity))
         finish()
     }
 
-    protected fun goToRegister() {
-        startActivity(Intent(this, RegisterActivity::class.java))
-        finish()
-    }
-
-    protected fun goToLogin() {
-        startActivity(Intent(this, LoginActivity::class.java))
-        finish()
-    }
 }
