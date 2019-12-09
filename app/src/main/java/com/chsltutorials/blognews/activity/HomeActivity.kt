@@ -46,25 +46,32 @@ class HomeActivity : BaseActivity(),
         setSupportActionBar(toolbar)
 
         mAuth = FirebaseAuth.getInstance()
+
         mAuth.currentUser?.let {
             currentUser = it
             updateNavHeader()
             initPopUp()
-            fab.setOnClickListener { popUpDialog.show() }
-            popUpDialog.ivPopupSelected.setOnClickListener {
-                verifySDK(this,CODE, REQUESTCODE)
-            }
-            popUpDialog.ivAddPopup.setOnClickListener {
-                popUpDialog.popupProgressBar.visibility = View.VISIBLE
-                it.visibility = View.INVISIBLE
 
-                if(title.isNotEmpty() && description.isNotEmpty() && pickedImagePopup != null){
-                    addPostToFirebaseDatabase()
-                }else{
-                    showMessageAlert(this,"Por favor, preencha todos os campos obrigatórios")
-                    popUpDialog.popupProgressBar.visibility = View.INVISIBLE
-                    popUpDialog.ivAddPopup.visibility = View.VISIBLE
-                }
+            fab.setOnClickListener { popUpDialog.show() }
+
+            popUpDialog.ivPopupSelected.setOnClickListener {
+                verifySDK(this, CODE, REQUESTCODE)
+            }
+        }
+
+        popUpDialog.ivAddPopup.setOnClickListener {
+            popUpDialog.popupProgressBar.visibility = View.VISIBLE
+            it.visibility = View.INVISIBLE
+
+            title = popUpDialog.etTitlePopup.text.toString()
+            description = popUpDialog.etDescriptionPopup.text.toString()
+
+            if (title.isNotEmpty() && description.isNotEmpty() && pickedImagePopup != null) {
+                addPostToFirebaseDatabase()
+            } else {
+                showMessageAlert(this, "Por favor, preencha todos os campos obrigatórios")
+                popUpDialog.popupProgressBar.visibility = View.INVISIBLE
+                popUpDialog.ivAddPopup.visibility = View.VISIBLE
             }
         }
 
@@ -75,6 +82,8 @@ class HomeActivity : BaseActivity(),
         toggle.syncState()
         navView.setNavigationItemSelectedListener(this)
     }
+
+
 
     private fun initPopUp() {
         popUpDialog = Dialog(this)
@@ -89,9 +98,6 @@ class HomeActivity : BaseActivity(),
             .into(popUpDialog.ivPhotoPopup)
 
         pickedImagePopup.let {  popUpDialog.ivPopupSelected.setImageURI(it) }
-
-        title = popUpDialog.etTitlePopup.text.toString()
-        description = popUpDialog.etDescriptionPopup.text.toString()
     }
 
     private fun addPostToFirebaseDatabase() {
@@ -135,11 +141,6 @@ class HomeActivity : BaseActivity(),
             //usuario escolheu a imagem, que deve ser salva no objeto Uri
             pickedImagePopup = data.data!!
             popUpDialog.ivPopupSelected.setImageURI(pickedImagePopup)
-
-//            Glide.with(applicationContext)
-//                .load(pickedImagePopup)
-//                .into(addPopUpDialog.ivPopupSelected)
-
         }
     }
 
