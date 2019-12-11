@@ -81,6 +81,7 @@ class HomeActivity : BaseActivity(),
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         navView.setNavigationItemSelectedListener(this)
+        supportFragmentManager.beginTransaction().replace(R.id.flContainer,HomeFragment()).commit()
     }
 
 
@@ -103,9 +104,9 @@ class HomeActivity : BaseActivity(),
     private fun addPostToFirebaseDatabase() {
         val storageReference = FirebaseStorage.getInstance().reference.child("blog_imagens")
         val imagePath = storageReference.child(pickedImagePopup!!.lastPathSegment)
-        imagePath.putFile(pickedImagePopup!!)
-            .addOnSuccessListener {
-                val imageDownloadLink = it.uploadSessionUri.toString()
+        imagePath.putFile(pickedImagePopup!!).addOnSuccessListener {
+            imagePath.downloadUrl.addOnSuccessListener {
+                val imageDownloadLink = it.toString()
                 val database = FirebaseDatabase.getInstance()
                 val myReference = database.getReference("Publicações").push()
                 val myKey = myReference.key
@@ -125,11 +126,12 @@ class HomeActivity : BaseActivity(),
                     popUpDialog.ivAddPopup.visibility = View.VISIBLE
                 }
             }
-            .addOnFailureListener {
-                showMessageAlert(this,it.message!!)
+            imagePath.downloadUrl.addOnFailureListener { e ->
+                showMessageAlert(this,e.message!!)
                 popUpDialog.popupProgressBar.visibility = View.INVISIBLE
                 popUpDialog.ivAddPopup.visibility = View.VISIBLE
             }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
