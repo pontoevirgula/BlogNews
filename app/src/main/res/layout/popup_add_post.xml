@@ -58,7 +58,7 @@
             android:background="@drawable/circle_bg"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            app:srcCompat="@drawable/ic_create_post"
+            app:srcCompat="@drawable/ic_add_black"
             tools:layout_editor_absoluteY="249dp"
             tools:layout_editor_absoluteX="186dp"
             android:id="@+id/ivAddPopup"/>

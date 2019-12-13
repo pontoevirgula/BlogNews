@@ -27,7 +27,6 @@ abstract class BaseActivity : AppCompatActivity() {
     lateinit var currentUser : FirebaseUser
     lateinit var databaseReference : DatabaseReference
     lateinit var firebaseDatabase : FirebaseDatabase
-    lateinit var context : Context
 
     protected fun verifySDK(context : Context, code : Int,requestCode : Int){
         if(Build.VERSION.SDK_INT >= 22){
