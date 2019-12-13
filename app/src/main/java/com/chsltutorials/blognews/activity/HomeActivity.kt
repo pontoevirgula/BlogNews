@@ -105,19 +105,19 @@ class HomeActivity : BaseActivity(),
         val storageReference = FirebaseStorage.getInstance().reference.child("blog_imagens")
         val imagePath = storageReference.child(pickedImagePopup!!.lastPathSegment)
         imagePath.putFile(pickedImagePopup!!).addOnSuccessListener {
-            imagePath.downloadUrl.addOnSuccessListener {
-                val imageDownloadLink = it.toString()
+            imagePath.downloadUrl.addOnSuccessListener { uri ->
+                val imageDownloadLink = uri.toString()
                 val database = FirebaseDatabase.getInstance()
                 val myReference = database.getReference("Publicações").push()
                 val myKey = myReference.key
 
                 val post = Post(
-                    myKey,
-                    title,
-                    description,
-                    imageDownloadLink,
-                    currentUser.uid,
-                    currentUser.photoUrl.toString()
+                    postKey = myKey,
+                    title = title,
+                    description = description,
+                    pictures = imageDownloadLink,
+                    userId = currentUser.uid,
+                    userPhoto = currentUser.photoUrl.toString()
                 )
 
                 myReference.setValue(post).addOnSuccessListener {

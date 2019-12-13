@@ -17,10 +17,9 @@ import kotlinx.android.synthetic.main.fragment_home.*
 
 class HomeFragment : Fragment() {
 
-    lateinit var postAdapter : PostAdapter
-    lateinit var firebaseDatabase: FirebaseDatabase
-    lateinit var databaseReference: DatabaseReference
     var postList: MutableList<Post> = ArrayList()
+    lateinit var databaseReference : DatabaseReference
+    lateinit var firebaseDatabase : FirebaseDatabase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

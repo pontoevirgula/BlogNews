@@ -18,11 +18,15 @@ import com.chsltutorials.blognews.activity.RegisterActivity
 import com.chsltutorials.blognews.util.showMessageAlert
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 abstract class BaseActivity : AppCompatActivity() {
 
     lateinit var mAuth : FirebaseAuth
     lateinit var currentUser : FirebaseUser
+    lateinit var databaseReference : DatabaseReference
+    lateinit var firebaseDatabase : FirebaseDatabase
     lateinit var context : Context
 
     protected fun verifySDK(context : Context, code : Int,requestCode : Int){
