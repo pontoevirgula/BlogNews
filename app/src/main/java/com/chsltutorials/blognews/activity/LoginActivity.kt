@@ -5,8 +5,9 @@ import android.util.Log
 import android.view.View
 import com.chsltutorials.blognews.R
 import com.chsltutorials.blognews.base.BaseActivity
+import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseAuth
+import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseUser
 import com.chsltutorials.blognews.util.showMessageAlert
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : BaseActivity() {
@@ -17,8 +18,6 @@ class LoginActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
-        mAuth = FirebaseAuth.getInstance()
 
         progressBarLogin.visibility = View.INVISIBLE
 
@@ -43,7 +42,7 @@ class LoginActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
-        mAuth.currentUser?.let {
+        getFirebaseUser()?.let {
             //se ja estiver conectado sera redirecionado a home
             currentUser = it
             goToOtherActivity(HomeActivity::class.java)
@@ -52,7 +51,7 @@ class LoginActivity : BaseActivity() {
 
     private fun signInUser(email: String, password: String) {
 
-        mAuth.signInWithEmailAndPassword(email,password)
+        getFirebaseAuth().signInWithEmailAndPassword(email,password)
             .addOnCompleteListener {
                 if (it.isSuccessful){
                     btnLogin.visibility = View.VISIBLE

@@ -23,10 +23,8 @@ import com.google.firebase.database.FirebaseDatabase
 
 abstract class BaseActivity : AppCompatActivity() {
 
-    lateinit var mAuth : FirebaseAuth
     lateinit var currentUser : FirebaseUser
-    lateinit var databaseReference : DatabaseReference
-    lateinit var firebaseDatabase : FirebaseDatabase
+
 
     protected fun verifySDK(context : Context, code : Int,requestCode : Int){
         if(Build.VERSION.SDK_INT >= 22){

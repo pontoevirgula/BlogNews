@@ -9,11 +9,12 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.chsltutorials.blognews.base.BaseActivity
+import com.chsltutorials.blognews.util.Constants
+import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseAuth
+import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseStorageReference
 import com.chsltutorials.blognews.util.showMessageAlert
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
-import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_register.*
 
 
@@ -28,11 +29,9 @@ class RegisterActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(com.chsltutorials.blognews.R.layout.activity_register)
 
-        mAuth = FirebaseAuth.getInstance()
-
         progressBar.visibility = View.INVISIBLE
 
-        ivUser.setOnClickListener { verifySDK(this, CODE, REQUESTCODE) }
+        ivUser.setOnClickListener { verifySDK(this, Constants.CODE_REGISTER, Constants.REQUESTCODE_REGISTER) }
 
         btnSave.setOnClickListener {
             progressBar.visibility = View.VISIBLE
@@ -54,11 +53,11 @@ class RegisterActivity : BaseActivity() {
 
     private fun createUserAccount(name: String, email: String, password: String) {
 
-        mAuth.createUserWithEmailAndPassword(email,password)
+        getFirebaseAuth().createUserWithEmailAndPassword(email,password)
             .addOnCompleteListener {
                 if (it.isSuccessful){
                     showMessageAlert(this,"Conta criada")
-                    updateUserInfo(name,pickedImage,mAuth.currentUser)
+                    updateUserInfo(name,pickedImage,getFirebaseAuth().currentUser)
                 }else{
                     Log.w("TAG", "${it.exception}")
                     showMessageAlert(this,"Falha ao criar conta. ${it.exception?.message}")
@@ -70,8 +69,7 @@ class RegisterActivity : BaseActivity() {
     }
 
     private fun updateUserInfo(name: String, pickedImage: Uri, currentUser: FirebaseUser?) {
-        val storage = FirebaseStorage.getInstance().reference.child("users_photos")
-        val imageFilePath = storage.child(pickedImage.lastPathSegment)
+        val imageFilePath = getFirebaseStorageReference(Constants.USER_PHOTOS).child(pickedImage.lastPathSegment!!)
         imageFilePath.putFile(pickedImage).addOnSuccessListener {
             imageFilePath.downloadUrl.addOnSuccessListener {
                 val profileUpdate = UserProfileChangeRequest.Builder()
@@ -93,7 +91,7 @@ class RegisterActivity : BaseActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == Activity.RESULT_OK
-            && requestCode == REQUESTCODE
+            && requestCode == Constants.REQUESTCODE_REGISTER
             && data != null ){
             //usuario escolheu a imagem, que deve ser salva no objeto Uri
             pickedImage = data.data!!
@@ -106,9 +104,4 @@ class RegisterActivity : BaseActivity() {
         }
     }
 
-
-    companion object{
-        const val CODE = 1
-        const val REQUESTCODE = 1
-    }
 }

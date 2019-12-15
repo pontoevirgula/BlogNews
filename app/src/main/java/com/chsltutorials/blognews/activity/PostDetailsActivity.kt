@@ -12,8 +12,11 @@ import com.chsltutorials.blognews.R
 import com.chsltutorials.blognews.adapter.CommentAdapter
 import com.chsltutorials.blognews.base.BaseActivity
 import com.chsltutorials.blognews.model.Comment
+import com.chsltutorials.blognews.util.Constants
+import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseAuth
+import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseDatabaseReference
+import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseUser
 import com.chsltutorials.blognews.util.showMessageAlert
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_post_details.*
 import java.util.*
@@ -25,6 +28,7 @@ class PostDetailsActivity : BaseActivity() {
     private var commentList: MutableList<Comment> = ArrayList()
     lateinit var postKey : String
     lateinit var commentField : String
+    lateinit var databaseReference : DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,31 +39,29 @@ class PostDetailsActivity : BaseActivity() {
         supportActionBar!!.hide()
 
 
-        mAuth = FirebaseAuth.getInstance()
-        currentUser = mAuth.currentUser!!
-        firebaseDatabase = FirebaseDatabase.getInstance()
-
         ibPostDetailAddComment.setOnClickListener {
             it.visibility = View.INVISIBLE
             commentField = etPostDetailComment.text.toString()
             if (verifyCommentField(commentField)) {
-                databaseReference = firebaseDatabase.getReference("Comentários").child(postKey).push()
-                val comment = Comment(
-                    id = currentUser.uid,
-                    name = currentUser.displayName!!,
-                    content = commentField,
-                    image = currentUser.photoUrl.toString()
-                )
-                databaseReference.setValue(comment)
-                    .addOnSuccessListener {
-                        showMessageAlert(this, "Comentário adicionado")
-                        etPostDetailComment.setText("")
-                        ibPostDetailAddComment.visibility = View.VISIBLE
-                    }
-                    .addOnFailureListener { e ->
-                        showMessageAlert(this, "Falha ao adicionar comentário : ${e.message}")
-                        ibPostDetailAddComment.visibility = View.VISIBLE
-                    }
+                databaseReference = getFirebaseDatabaseReference(Constants.COMMENTS).child(postKey).push()
+                getFirebaseAuth().currentUser?.let {
+                    val comment = Comment(
+                        id = getFirebaseUser()!!.uid,
+                        name = getFirebaseUser()!!.displayName!!,
+                        content = commentField,
+                        image = getFirebaseUser()!!.photoUrl.toString()
+                    )
+                    databaseReference.setValue(comment)
+                        .addOnSuccessListener {
+                            showMessageAlert(this, "Comentário adicionado")
+                            etPostDetailComment.setText("")
+                            ibPostDetailAddComment.visibility = View.VISIBLE
+                        }
+                        .addOnFailureListener { e ->
+                            showMessageAlert(this, "Falha ao adicionar comentário : ${e.message}")
+                            ibPostDetailAddComment.visibility = View.VISIBLE
+                        }
+                }
             }
         }
 
@@ -85,7 +87,6 @@ class PostDetailsActivity : BaseActivity() {
         layoutManager.stackFromEnd = true
         layoutManager.reverseLayout = true
         rvComment.layoutManager = layoutManager
-        //rvComment.addItemDecoration(SimpleDividerItemDecoration(this))
     }
 
     override fun onStart() {
@@ -97,7 +98,7 @@ class PostDetailsActivity : BaseActivity() {
     }
 
     private fun initList() {
-        databaseReference = firebaseDatabase.getReference("Comentários").child(postKey)
+        databaseReference = getFirebaseDatabaseReference(Constants.COMMENTS).child(postKey)
         databaseReference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for(commentSnap in dataSnapshot.children) {
@@ -107,7 +108,7 @@ class PostDetailsActivity : BaseActivity() {
                 rvComment.adapter = CommentAdapter(this@PostDetailsActivity,commentList)
             }
             override fun onCancelled(databaseError: DatabaseError) {
-                Log.e("ERRO NO DATABASE",databaseError.message)
+                Log.e(Constants.DATABASE_ERROR,databaseError.message)
             }
         })
     }
