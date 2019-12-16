@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.chsltutorials.blognews.R
 import com.chsltutorials.blognews.base.BaseActivity
 import com.chsltutorials.blognews.util.Constants
 import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseAuth
@@ -23,6 +24,7 @@ class RegisterActivity : BaseActivity() {
     lateinit var email : String
     lateinit var password : String
     lateinit var pickedImage : Uri
+    lateinit var profileUpdate : UserProfileChangeRequest
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,14 +72,20 @@ class RegisterActivity : BaseActivity() {
     private fun updateUserInfo(name: String, pickedImage: Uri, currentUser: FirebaseUser?) {
         val imageFilePath = getFirebaseStorageReference(Constants.USER_PHOTOS).child(pickedImage.lastPathSegment!!)
         imageFilePath.putFile(pickedImage).addOnSuccessListener {
-            imageFilePath.downloadUrl.addOnSuccessListener {
-                val profileUpdate = UserProfileChangeRequest.Builder()
-                    .setDisplayName(name)
-                    .setPhotoUri(it)
-                    .build()
+            imageFilePath.downloadUrl.addOnSuccessListener {uri->
+                profileUpdate = if (uri != null) {
+                    UserProfileChangeRequest.Builder()
+                        .setDisplayName(name)
+                        .setPhotoUri(uri)
+                        .build()
+                    }else{
+                        UserProfileChangeRequest.Builder()
+                            .setDisplayName(name)
+                            .build()
+                    }
 
-                currentUser?.updateProfile(profileUpdate)?.addOnCompleteListener {
-                    if(it.isSuccessful){
+                currentUser?.updateProfile(profileUpdate)?.addOnCompleteListener { task->
+                    if(task.isSuccessful){
                         showViewMessage(clRegister,this,"Cadastro completo",false)
                         goToOtherActivity(HomeActivity::class.java)
                     }

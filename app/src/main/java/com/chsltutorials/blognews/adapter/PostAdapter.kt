@@ -23,7 +23,11 @@ class PostAdapter(var context: Context, var posts : MutableList<Post>) : Recycle
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.itemView.tvRowPostTitle.text = posts[position].title
         Glide.with(context).load(posts[position].pictures).into(holder.itemView.ivRowPost)
-        Glide.with(context).load(posts[position].userPhoto).apply(RequestOptions.circleCropTransform()).into(holder.itemView.ivRowPostProfile)
+        if (posts[position].userPhoto != null){
+            Glide.with(context).load(posts[position].userPhoto).apply(RequestOptions.circleCropTransform()).into(holder.itemView.ivRowPostProfile)
+        }else{
+            Glide.with(context).load(R.drawable.userphoto).apply(RequestOptions.circleCropTransform()).into(holder.itemView.ivRowPostProfile)
+        }
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){

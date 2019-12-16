@@ -26,8 +26,10 @@ import com.chsltutorials.blognews.util.Constants
 import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseAuth
 import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseDatabaseReference
 import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseStorageReference
+import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseUser
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.app_bar_home.*
 import kotlinx.android.synthetic.main.nav_header_home.view.*
@@ -40,6 +42,8 @@ class HomeActivity : BaseActivity(),
     var pickedImagePopup : Uri? = null
     lateinit var title: String
     lateinit var description : String
+    lateinit var post : Post
+    lateinit var myReference : DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,17 +113,29 @@ class HomeActivity : BaseActivity(),
         imagePath.putFile(pickedImagePopup!!).addOnSuccessListener {
             imagePath.downloadUrl.addOnSuccessListener { uri ->
                 val imageDownloadLink = uri.toString()
-                val myReference = getFirebaseDatabaseReference(Constants.PUBLISHEDS).push()
-                val myKey = myReference.key
-
-                val post = Post(
-                    postKey = myKey,
-                    title = title,
-                    description = description,
-                    pictures = imageDownloadLink,
-                    userId = currentUser.uid,
-                    userPhoto = currentUser.photoUrl.toString()
-                )
+                if (currentUser.photoUrl != null) {
+                    myReference = getFirebaseDatabaseReference(Constants.PUBLISHEDS).push()
+                    val myKey = myReference.key
+                    post = Post(
+                        postKey = myKey,
+                        title = title,
+                        description = description,
+                        pictures = imageDownloadLink,
+                        userId = currentUser.uid,
+                        userPhoto = currentUser.photoUrl.toString()
+                    )
+                }else{
+                    myReference = getFirebaseDatabaseReference(Constants.PUBLISHEDS).push()
+                    val myKey = myReference.key
+                    post = Post(
+                        postKey = myKey,
+                        title = title,
+                        description = description,
+                        pictures = imageDownloadLink,
+                        userId = currentUser.uid,
+                        userPhoto = currentUser.photoUrl.toString()
+                    )
+                }
 
                 myReference.setValue(post).addOnSuccessListener {
                     showViewMessage(clHome, this, "Postagem adicionado com sucesso",false)
@@ -152,10 +168,11 @@ class HomeActivity : BaseActivity(),
         headerView.tvNavUsername.text = currentUser.displayName
         headerView.tvNavEmail.text = currentUser.email
 
-        Glide.with(this)
-            .load(currentUser.photoUrl)
-            .apply(RequestOptions.circleCropTransform())
-            .into(headerView.ivNavUserPhoto)
+        if (currentUser.photoUrl != null) {
+            Glide.with(this).load(currentUser.photoUrl).apply(RequestOptions.circleCropTransform()).into(headerView.ivNavUserPhoto)
+        }else {
+            Glide.with(this).load(R.drawable.userphoto).apply(RequestOptions.circleCropTransform()).into(headerView.ivNavUserPhoto)
+        }
     }
 
     override fun onBackPressed() {

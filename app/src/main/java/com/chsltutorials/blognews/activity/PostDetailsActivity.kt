@@ -69,9 +69,17 @@ class PostDetailsActivity : BaseActivity() {
             Glide.with(this).load(postImage).into(ivPostDetail)
 
             val userPhotoPost = it.getString("userPhoto")
-            Glide.with(this).load(userPhotoPost).apply(RequestOptions.circleCropTransform()).into(ivPostDetailUserPhoto)
+            if (userPhotoPost != null) {
+                Glide.with(this).load(userPhotoPost).apply(RequestOptions.circleCropTransform()).into(ivPostDetailUserPhoto)
+            }else{
+                Glide.with(this).load(R.drawable.userphoto).apply(RequestOptions.circleCropTransform()).into(ivPostDetailUserPhoto)
+            }
 
-            Glide.with(this).load(getFirebaseUser()!!.photoUrl).apply(RequestOptions.circleCropTransform()).into(ivPostDetailCurrentUser)
+            if (getFirebaseUser()?.photoUrl != null) {
+                Glide.with(this).load(getFirebaseUser()!!.photoUrl).apply(RequestOptions.circleCropTransform()).into(ivPostDetailCurrentUser)
+            }else{
+                Glide.with(this).load(R.drawable.userphoto).apply(RequestOptions.circleCropTransform()).into(ivPostDetailCurrentUser)
+            }
 
             tvPostTitle.text = it.getString("title")
 
