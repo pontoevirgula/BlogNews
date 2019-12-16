@@ -7,7 +7,6 @@ import com.chsltutorials.blognews.R
 import com.chsltutorials.blognews.base.BaseActivity
 import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseAuth
 import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseUser
-import com.chsltutorials.blognews.util.showMessageAlert
 import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : BaseActivity() {
@@ -56,11 +55,11 @@ class LoginActivity : BaseActivity() {
                 if (it.isSuccessful){
                     btnLogin.visibility = View.VISIBLE
                     progressBarLogin.visibility = View.INVISIBLE
-                    showMessageAlert(this,"Logado com sucesso")
+                    showViewMessage(clLogin, this,"Logado com sucesso",false)
                     goToOtherActivity(HomeActivity::class.java)
                 }else{
                     Log.w("TAG", "${it.exception}")
-                    showMessageAlert(this,"Falha no login")
+                    showViewMessage(clLogin, this,"Falha no login",true)
                     btnLogin.visibility = View.VISIBLE
                     progressBarLogin.visibility = View.INVISIBLE
                 }

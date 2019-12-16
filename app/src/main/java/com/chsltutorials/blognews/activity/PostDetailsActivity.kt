@@ -16,7 +16,6 @@ import com.chsltutorials.blognews.util.Constants
 import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseAuth
 import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseDatabaseReference
 import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseUser
-import com.chsltutorials.blognews.util.showMessageAlert
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_post_details.*
 import java.util.*
@@ -53,12 +52,12 @@ class PostDetailsActivity : BaseActivity() {
                     )
                     databaseReference.setValue(comment)
                         .addOnSuccessListener {
-                            showMessageAlert(this, "Comentário adicionado")
+                            showViewMessage(nsvPostDetail, this, "Comentário adicionado",false)
                             etPostDetailComment.setText("")
                             ibPostDetailAddComment.visibility = View.VISIBLE
                         }
                         .addOnFailureListener { e ->
-                            showMessageAlert(this, "Falha ao adicionar comentário : ${e.message}")
+                            showViewMessage(nsvPostDetail, this, "Falha ao adicionar comentário : ${e.message}",true)
                             ibPostDetailAddComment.visibility = View.VISIBLE
                         }
                 }
@@ -72,7 +71,7 @@ class PostDetailsActivity : BaseActivity() {
             val userPhotoPost = it.getString("userPhoto")
             Glide.with(this).load(userPhotoPost).apply(RequestOptions.circleCropTransform()).into(ivPostDetailUserPhoto)
 
-            Glide.with(this).load(currentUser.photoUrl).apply(RequestOptions.circleCropTransform()).into(ivPostDetailCurrentUser)
+            Glide.with(this).load(getFirebaseUser()!!.photoUrl).apply(RequestOptions.circleCropTransform()).into(ivPostDetailCurrentUser)
 
             tvPostTitle.text = it.getString("title")
 
@@ -124,7 +123,7 @@ class PostDetailsActivity : BaseActivity() {
         var fieldIsNotEmpty = true
 
         if (comment.isEmpty()){
-            showMessageAlert(applicationContext,"Campo comentário está vazio.")
+            showViewMessage(nsvPostDetail, this,"Campo comentário está vazio.",true)
             ibPostDetailAddComment.visibility = View.VISIBLE
             fieldIsNotEmpty = false
         }

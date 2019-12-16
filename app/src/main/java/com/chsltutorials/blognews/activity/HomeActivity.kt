@@ -26,8 +26,6 @@ import com.chsltutorials.blognews.util.Constants
 import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseAuth
 import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseDatabaseReference
 import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseStorageReference
-import com.chsltutorials.blognews.util.showMessageAlert
-import com.chsltutorials.blognews.util.showMessageAlert2
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_home.*
@@ -71,7 +69,7 @@ class HomeActivity : BaseActivity(),
                 if (title.isNotEmpty() && description.isNotEmpty() && pickedImagePopup != null) {
                     addPostToFirebaseDatabase()
                 } else {
-                    showMessageAlert(this, "Por favor, preencha todos os campos obrigatórios")
+                    showViewMessage(clHome, this,"Por favor, preencha todos os campos obrigatórios",true)
                     it.progressBarPopup.visibility = View.INVISIBLE
                     it.ivAddPostPoup.visibility = View.VISIBLE
                 }
@@ -124,13 +122,13 @@ class HomeActivity : BaseActivity(),
                 )
 
                 myReference.setValue(post).addOnSuccessListener {
-                    showMessageAlert(this, "Postagem adicionado com sucesso")
+                    showViewMessage(clHome, this, "Postagem adicionado com sucesso",false)
                     popUpDialog.progressBarPopup.visibility = View.INVISIBLE
                     popUpDialog.ivAddPostPoup.visibility = View.VISIBLE
                 }
             }
             imagePath.downloadUrl.addOnFailureListener { e ->
-                showMessageAlert(this,e.message!!)
+                showViewMessage(clHome, this,e.message!!,true)
                 popUpDialog.progressBarPopup.visibility = View.INVISIBLE
                 popUpDialog.ivAddPostPoup.visibility = View.VISIBLE
             }

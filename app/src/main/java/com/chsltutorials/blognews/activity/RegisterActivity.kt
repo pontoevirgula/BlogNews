@@ -12,7 +12,6 @@ import com.chsltutorials.blognews.base.BaseActivity
 import com.chsltutorials.blognews.util.Constants
 import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseAuth
 import com.chsltutorials.blognews.util.FirebaseUtils.getFirebaseStorageReference
-import com.chsltutorials.blognews.util.showMessageAlert
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.android.synthetic.main.activity_register.*
@@ -37,7 +36,7 @@ class RegisterActivity : BaseActivity() {
             progressBar.visibility = View.VISIBLE
             btnSave.visibility = View.INVISIBLE
 
-            if (isAllFieldsCorrect(etName,etEmail,etPassword,etConfirmPassword,pickedImage.toString())){
+            if (isAllFieldsCorrect(clRegister,etName,etEmail,etPassword,etConfirmPassword,pickedImage.toString())){
                 name = etName.text.toString()
                 email = etEmail.text.toString()
                 password = etPassword.text.toString()
@@ -56,11 +55,11 @@ class RegisterActivity : BaseActivity() {
         getFirebaseAuth().createUserWithEmailAndPassword(email,password)
             .addOnCompleteListener {
                 if (it.isSuccessful){
-                    showMessageAlert(this,"Conta criada")
+                    showViewMessage(clRegister,this,"Conta criada",false)
                     updateUserInfo(name,pickedImage,getFirebaseAuth().currentUser)
                 }else{
                     Log.w("TAG", "${it.exception}")
-                    showMessageAlert(this,"Falha ao criar conta. ${it.exception?.message}")
+                    showViewMessage(clRegister,this,"Falha ao criar conta. ${it.exception?.message}",true)
                     btnSave.visibility = View.VISIBLE
                     progressBar.visibility = View.INVISIBLE
                 }
@@ -79,7 +78,7 @@ class RegisterActivity : BaseActivity() {
 
                 currentUser?.updateProfile(profileUpdate)?.addOnCompleteListener {
                     if(it.isSuccessful){
-                        showMessageAlert(this,"Cadastro completo")
+                        showViewMessage(clRegister,this,"Cadastro completo",false)
                         goToOtherActivity(HomeActivity::class.java)
                     }
                 }

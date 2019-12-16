@@ -1,25 +1,19 @@
 package com.chsltutorials.blognews.base
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.util.Patterns
+import android.view.View
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.chsltutorials.blognews.activity.HomeActivity
-import com.chsltutorials.blognews.activity.LoginActivity
-import com.chsltutorials.blognews.activity.RegisterActivity
-import com.chsltutorials.blognews.util.showMessageAlert
-import com.google.firebase.auth.FirebaseAuth
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 
 abstract class BaseActivity : AppCompatActivity() {
 
@@ -41,7 +35,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)){
                 //SE NEGAR PERMISSÃO
-                showMessageAlert(context,"Por favor aceite as permissões requisitadas")
+                showViewMessage(null, context,"Por favor aceite as permissões requisitadas",true)
             }else{
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),code)
             }
@@ -58,7 +52,7 @@ abstract class BaseActivity : AppCompatActivity() {
         startActivityForResult(galleryIntent, requestCode)
     }
 
-    fun isAllFieldsCorrect(etName : EditText, etEmail : EditText, etPassword : EditText, etConfirmPassword : EditText, pickedImage : String) : Boolean {
+    fun isAllFieldsCorrect(view : View, etName : EditText, etEmail : EditText, etPassword : EditText, etConfirmPassword : EditText, pickedImage : String) : Boolean {
 
         val name = etName.text.toString()
         val email = etEmail.text.toString()
@@ -68,7 +62,7 @@ abstract class BaseActivity : AppCompatActivity() {
         var correctRegister = true
 
         if (pickedImage.isEmpty()){
-            showMessageAlert(applicationContext,"Selecione uma imagem para foto de perfil")
+            showViewMessage(view, applicationContext,"Selecione uma imagem para foto de perfil",true)
             correctRegister = false
         }
         if (name.isEmpty()) {
@@ -113,6 +107,22 @@ abstract class BaseActivity : AppCompatActivity() {
     protected fun goToOtherActivity(activity : Class<*>) {
         startActivity(Intent(this, activity))
         finish()
+    }
+
+    fun showViewMessage(view : View?, context: Context, message : String,  errorMessage : Boolean) {
+        if (errorMessage && view != null) {
+            val snackbar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
+                .setAction("Action", null)
+            snackbar.view.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_red_dark))
+            snackbar.show()
+        }else if (!errorMessage && view != null) {
+            val snackbar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
+                .setAction("Action", null)
+            snackbar.view.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_green_dark))
+            snackbar.show()
+        }else{
+            Toast.makeText(context,message,Toast.LENGTH_SHORT).show()
+        }
     }
 
 }
