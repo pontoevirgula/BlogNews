@@ -1,7 +1,7 @@
 # BlogNews
 App que posta blogs via firebase
 
-                           
+Tecnologias utilizadas                 
 - Kotlin
 - Glide
 - Firebase Auth
