@@ -29,28 +29,30 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val layoutManager = LinearLayoutManager(context)
-        layoutManager.stackFromEnd = true
-        layoutManager.reverseLayout = true
-        rvPost.layoutManager = layoutManager
+        val linearLayoutManager = LinearLayoutManager(context)
+        linearLayoutManager.stackFromEnd = true
+        linearLayoutManager.reverseLayout = true
+        rvPost.layoutManager = linearLayoutManager
     }
 
     override fun onStart() {
         super.onStart()
-        if (postList.size > 0) {
-            postList.clear()
-        }
+        fetchPostsFromDatabase()
+    }
 
-        getFirebaseDatabaseReference(Constants.PUBLISHEDS).addValueEventListener(object : ValueEventListener{
+    private fun fetchPostsFromDatabase() {
+        getFirebaseDatabaseReference(Constants.PUBLISHEDS).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (postSnap in dataSnapshot.children){
+                postList.clear()
+                for (postSnap in dataSnapshot.children) {
                     val post = postSnap.getValue(Post::class.java)
                     postList.add(post.let { it!! })
                 }
-                rvPost.adapter = PostAdapter(context!!,postList)
+                rvPost.adapter = PostAdapter(context!!, postList)
             }
+
             override fun onCancelled(databaseError: DatabaseError) {
-                Log.e(Constants.DATABASE_ERROR,databaseError.message)
+                Log.e(Constants.DATABASE_ERROR, databaseError.message)
             }
 
         })

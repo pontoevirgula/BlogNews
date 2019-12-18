@@ -1,5 +1,6 @@
 package com.chsltutorials.blognews.activity
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
@@ -27,8 +28,8 @@ class PostDetailsActivity : BaseActivity() {
     private var commentList: MutableList<Comment> = ArrayList()
     lateinit var postKey : String
     lateinit var commentField : String
-    lateinit var databaseReference : DatabaseReference
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post_details)
@@ -42,7 +43,7 @@ class PostDetailsActivity : BaseActivity() {
             it.visibility = View.INVISIBLE
             commentField = etPostDetailComment.text.toString()
             if (verifyCommentField(commentField)) {
-                databaseReference = getFirebaseDatabaseReference(Constants.COMMENTS).child(postKey).push()
+                val commentPush = databaseReference.push()
                 getFirebaseAuth().currentUser?.let {
                     val comment = Comment(
                         id = getFirebaseUser()!!.uid,
@@ -50,7 +51,7 @@ class PostDetailsActivity : BaseActivity() {
                         content = commentField,
                         image = getFirebaseUser()!!.photoUrl.toString()
                     )
-                    databaseReference.setValue(comment)
+                    commentPush.setValue(comment)
                         .addOnSuccessListener {
                             showViewMessage(nsvPostDetail, this, "Comentário adicionado",false)
                             etPostDetailComment.setText("")
@@ -86,28 +87,30 @@ class PostDetailsActivity : BaseActivity() {
             tvPostDetailDesc.text = it.getString("description")
 
             postKey = it.getString("key")!!
+            databaseReference = getFirebaseDatabaseReference(Constants.COMMENTS).child(postKey)
 
-            tvPostDetailDate.text = timestampToString(it.getLong("date"))
+            tvPostDetailDate.text = "Postou no dia ${timestampToString(it.getLong("date"))}"
         }
 
-        val layoutManager = LinearLayoutManager(this)
-        layoutManager.stackFromEnd = true
-        layoutManager.reverseLayout = true
-        rvComment.layoutManager = layoutManager
+        configRecyclerView()
+    }
+
+    private fun configRecyclerView() {
+        val linearLayoutManager = LinearLayoutManager(this)
+        linearLayoutManager.stackFromEnd = true
+        linearLayoutManager.reverseLayout = true
+        rvComment.layoutManager = linearLayoutManager
     }
 
     override fun onStart() {
         super.onStart()
-        if (commentList.size > 0) {
-            commentList.clear()
-        }
-        initList()
+        fetchCommentsFromDatabase()
     }
 
-    private fun initList() {
-        databaseReference = getFirebaseDatabaseReference(Constants.COMMENTS).child(postKey)
+    private fun fetchCommentsFromDatabase() {
         databaseReference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                commentList.clear()
                 for(commentSnap in dataSnapshot.children) {
                     val comment = commentSnap.getValue(Comment::class.java)
                     commentList.add(comment.let { it!! })
@@ -123,7 +126,8 @@ class PostDetailsActivity : BaseActivity() {
     private fun timestampToString(time: Long): String? {
         val calendar = Calendar.getInstance(Locale.US)
         calendar.timeInMillis = time
-        return DateFormat.format("dd-MM-yyyy", calendar).toString()
+        val format = DateFormat.format("dd/MM/yyyy HH:mm", calendar).toString()
+        return format.replace(" ", " às ")
     }
 
     private fun verifyCommentField(comment : String) : Boolean{

@@ -13,6 +13,7 @@ import com.chsltutorials.blognews.model.Comment
 import kotlinx.android.synthetic.main.adapter_comment_item.view.*
 import java.util.*
 
+
 class CommentAdapter (var context: Context, var comments : MutableList<Comment>) : RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -30,9 +31,9 @@ class CommentAdapter (var context: Context, var comments : MutableList<Comment>)
     private fun getTimeFromTimestamp(time: Long): String? {
         val calendar = Calendar.getInstance(Locale.US)
         calendar.timeInMillis = time
-        return DateFormat.format("HH:mm", calendar).toString()
+        val format = DateFormat.format("dd/MM/yyyy HH:mm", calendar).toString()
+        return format.replace(" ", " às ")
     }
-
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 

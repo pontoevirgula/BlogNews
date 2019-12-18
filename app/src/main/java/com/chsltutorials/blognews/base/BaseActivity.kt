@@ -14,10 +14,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
 
 abstract class BaseActivity : AppCompatActivity() {
 
     lateinit var currentUser : FirebaseUser
+    lateinit var databaseReference : DatabaseReference
 
 
     protected fun verifySDK(context : Context, code : Int,requestCode : Int){
