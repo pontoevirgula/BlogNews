@@ -26,5 +26,8 @@
     <string name="title">Título</string>
     <string name="description">Descrição</string>
     <string name="write_comment">Faça um comentário</string>
+    <string name="recover_password">
+        <u>Esqueceu a senha? Clique aqui.</u>
+    </string>
 
 </resources>

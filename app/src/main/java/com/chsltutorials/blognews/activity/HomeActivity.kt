@@ -56,26 +56,26 @@ class HomeActivity : BaseActivity(),
             initPopUp()
         }
 
-        popUpDialog.let {
-            fab.setOnClickListener { fab-> it.show() }
+        popUpDialog.let { popup ->
+            fab.setOnClickListener { popup.show() }
 
-            it.ivPictureSelectedPopup.setOnClickListener {
+            popup.ivPictureSelectedPopup.setOnClickListener {
                 verifySDK(this, Constants.CODE_HOME, Constants.REQUESTCODE_HOME)
             }
 
-            it.ivAddPostPoup.setOnClickListener { btAddPost ->
-                it.progressBarPopup.visibility = View.VISIBLE
+            popup.ivAddPostPoup.setOnClickListener { btAddPost ->
+                popup.progressBarPopup.visibility = View.VISIBLE
                 btAddPost.visibility = View.INVISIBLE
 
-                title = it.etTitlePopup.text.toString()
-                description = it.etDescriptionPopup.text.toString()
+                title = popup.etTitlePopup.text.toString()
+                description = popup.etDescriptionPopup.text.toString()
 
                 if (title.isNotEmpty() && description.isNotEmpty() && pickedImagePopup != null) {
                     addPostToFirebaseDatabase()
                 } else {
                     showViewMessage(clHome, this,"Por favor, preencha todos os campos obrigatórios",true)
-                    it.progressBarPopup.visibility = View.INVISIBLE
-                    it.ivAddPostPoup.visibility = View.VISIBLE
+                    popup.progressBarPopup.visibility = View.INVISIBLE
+                    popup.ivAddPostPoup.visibility = View.VISIBLE
                 }
             }
         }

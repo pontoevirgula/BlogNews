@@ -55,6 +55,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guidelineLogin"/>
+    <TextView
+            android:id="@+id/tvRecoverPassword"
+            app:layout_constraintStart_toStartOf="@id/etPasswordLogin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etPasswordLogin"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="24dp"
+            android:text="@string/recover_password"
+            android:textColor="#000"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
 
     <Button
             android:text="@string/login"
