@@ -8,3 +8,4 @@ Tecnologias utilizadas
 - armazenamento de dados do usuário com Firebase Storage
 - salvar comentários e posts com Firebase Database
 - Material Design
+- Testes UI com Espesso

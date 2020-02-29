@@ -28,7 +28,7 @@ class RegisterActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(com.chsltutorials.blognews.R.layout.activity_register)
+        setContentView(R.layout.activity_register)
 
         progressBar.visibility = View.INVISIBLE
 

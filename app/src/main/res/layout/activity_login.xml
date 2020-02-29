@@ -27,6 +27,21 @@
             app:layout_constraintGuide_percent="0.5"
             android:orientation="horizontal"/>
 
+    <TextView
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintEnd_toEndOf="@+id/etEmailLogin"
+            app:layout_constraintStart_toStartOf="@+id/etEmailLogin"
+            app:layout_constraintBottom_toTopOf="@+id/etEmailLogin"
+            android:text="@string/invalid_email"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="12sp"
+            android:visibility="gone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvMessageError"/>
+
     <EditText
             android:background="@drawable/custom_field_edittext"
             android:layout_width="265dp"
@@ -59,7 +74,7 @@
             android:id="@+id/tvRecoverPassword"
             app:layout_constraintStart_toStartOf="@id/etPasswordLogin"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etPasswordLogin"
+            app:layout_constraintTop_toBottomOf="@+id/btnLogin"
             android:layout_marginTop="4dp"
             android:layout_marginStart="24dp"
             android:text="@string/recover_password"
@@ -77,9 +92,9 @@
             android:layout_marginBottom="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etPasswordLogin"/>
     <ProgressBar
             style="?android:attr/progressBarStyle"
@@ -95,11 +110,22 @@
             android:id="@+id/tvStymulusCreateAccount"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnLogin"
             android:text="@string/stymulus_to_create_account"
             android:textColor="#000"
             android:layout_marginTop="24dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+
+    <com.google.android.gms.common.SignInButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvRecoverPassword"
+            android:layout_marginTop="16dp"
+            android:id="@+id/btnGoogleLogin"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

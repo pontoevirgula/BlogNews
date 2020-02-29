@@ -30,4 +30,7 @@
         <u>Esqueceu a senha? Clique aqui.</u>
     </string>
 
+    <string name="toast_message">"Campo comentário está vazio."</string>
+    <string name="invalid_email">"Campo email inválido. Preencha-o para logar"</string>
+
 </resources>
